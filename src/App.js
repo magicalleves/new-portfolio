@@ -3,7 +3,7 @@ import './App.css';
 
 // Sections
 const Home = () => {
-  const text = "Hi! I'm Eva Hajiyeva.\nAspiring developer";
+  const text = "Meow meow MOEW";
   const [displayText, setDisplayText] = useState([]);
 
   useEffect(() => {
@@ -71,7 +71,7 @@ const Experience = () => (
     <div className="pixel-box">
       <h2 className="pixel-text">EXPERIENCE</h2>
       <div className="timeline">
-        <div className="timeline-item pixel-text">Job 1 - 2022</div>
+        <div className="timeline-item pixel-text">Job 1 - meow 2022</div>
         <div className="timeline-item pixel-text">Job 2 - 2023</div>
       </div>
     </div>
