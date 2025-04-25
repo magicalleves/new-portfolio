@@ -1,38 +1,191 @@
-.App {
-  text-align: center;
+/* Base Styles */
+:root {
+  --primary: #2d2d2d;
+  --secondary: #535353;
+  --accent: #00ff00;
+  --bg: #0d0d0d;
+  --text: #e6e6e6;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  background-color: var(--bg);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+body {
+  font-family: 'Press Start 2P', cursive;
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Sections */
+.section {
+  height: 100vh;
+  width: 100vw;
+  scroll-snap-align: start;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  padding: 2rem;
+  position: relative;
 }
 
-.App-link {
-  color: #61dafb;
+/* Pixel Text */
+.pixel-text {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1rem;
+  line-height: 1.8;
+  text-transform: uppercase;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.pixel-char {
+  display: inline-block;
+  opacity: 0;
+  animation: reveal 0.5s ease forwards;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  z-index: 100;
+}
+
+.nav-link {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.nav-link:hover {
+  color: var(--accent);
+}
+
+.nav-link.active {
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent);
+}
+
+.nav-link.active::after {
+  content: '>';
+  position: absolute;
+  left: -1rem;
+  animation: blink 1s infinite;
+}
+
+/* Pixel UI Elements */
+.pixel-box {
+  border: 4px solid var(--text);
+  padding: 2rem;
+  max-width: 800px;
+  background-color: var(--bg);
+  box-shadow: 8px 8px 0 var(--secondary);
+}
+
+.pixel-card {
+  border: 3px solid var(--text);
+  padding: 1rem;
+  margin: 1rem;
+  background-color: var(--primary);
+  transition: all 0.3s ease;
+}
+
+.pixel-card:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 4px 4px 0 var(--accent);
+}
+
+.pixel-button {
+  background: var(--primary);
+  color: var(--text);
+  border: 3px solid var(--text);
+  padding: 0.8rem 2rem;
+  font-family: 'Press Start 2P', cursive;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pixel-button:hover {
+  background: var(--accent);
+  color: var(--primary);
+  box-shadow: 4px 4px 0 var(--text);
+}
+
+.pixel-input, .pixel-textarea {
+  background: var(--primary);
+  border: 3px solid var(--text);
+  padding: 0.8rem;
+  font-family: 'Press Start 2P', cursive;
+  color: var(--text);
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Layout */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.timeline {
+  margin-top: 2rem;
+}
+
+.timeline-item {
+  padding: 1rem;
+  border-left: 3px solid var(--accent);
+  margin-bottom: 1rem;
+}
+
+/* Animations */
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    flex-direction: row;
+    top: auto;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg);
+    padding: 1rem;
+    border: 3px solid var(--text);
   }
-  to {
-    transform: rotate(360deg);
+  
+  .nav-link {
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+  
+  .pixel-text {
+    font-size: 0.8rem;
   }
 }
