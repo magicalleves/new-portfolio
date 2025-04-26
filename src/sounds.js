@@ -11,7 +11,7 @@ export const sounds = {
 export const initSounds = () => {
   Object.keys(sounds).forEach(key => {
     sounds[key].audio = new Audio(sounds[key].src);
-    sounds[key].audio.volume = 0.5;
+    sounds[key].audio.volume = 0.3;
     
     // Set background music to loop
     if (key === 'intro') {
