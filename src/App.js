@@ -13,6 +13,8 @@ const playSound = (soundName) => {
   }
 };
 
+
+
 // Custom Cursor Component
 const Cursor = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -163,36 +165,145 @@ const About = () => (
     <div className="scanlines"></div>
   </section>
 );
+const Projects = ({ openProjectModal }) => {
+  const projectData = [
+    {
+      id: 1,
+      title: "FARMIUM",
+      description: "Farmium is a mobile app that connects farmers with buyers. I led the technical development as CTO, building the React Native frontend and coordinating the backend integration.",
+      technologies: ["React Native", "Expo", "Firebase", "Node.js"],
+      image: "/assets/images/farmium.png", // You can add image URLs here
+      link: "https://farmium.az"
+    },
+    {
+      id: 2,
+      title: "MEDICO.AZ",
+      description: "An e-commerce platform for medicine delivery in Azerbaijan. I developed the frontend interface and implemented the cart/checkout system.",
+      technologies: ["PHP", "jQuery", "MySQL", "AJAX"],
+      image: "",
+      link: "https://medico.az"
+    },
+    {
+      id: 3,
+      title: "PORTFOLIO V1",
+      description: "My first portfolio website built with pure HTML/CSS/JS. Featured interactive elements and a clean design.",
+      technologies: ["HTML5", "CSS3", "JavaScript"],
+      image: "",
+      link: "#"
+    }
+  ];
 
-const Projects = () => (
-  <section id="projects" className="section">
-    <div className="pixel-box glitch-box">
-      <h2 className="pixel-text">MY PROJECTS</h2>
-      <div className="project-grid">
-        {[1, 2, 3].map(project => (
-          <div 
-            key={project}
-            className="pixel-card"
+  return (
+    <section id="projects" className="section">
+      <div className="pixel-box glitch-box">
+        <h2 className="pixel-text">MY PROJECTS</h2>
+        <div className="project-grid">
+          {projectData.map(project => (
+            <div 
+              key={project.id}
+              className="pixel-card"
+              onMouseEnter={() => playSound('hover')}
+              onClick={() => openProjectModal(project.id)}
+            >
+              <div className="pixel-card-header">{project.title}</div>
+              <div className="pixel-card-body">
+                <p>{project.description.substring(0, 60)}...</p>
+                <button 
+                  className="pixel-button small"
+                  onMouseEnter={() => playSound('hover')}
+                >
+                  VIEW DETAILS
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="scanlines"></div>
+    </section>
+  );
+};
+
+const ProjectModal = ({ isOpen, onClose, projectId }) => {
+  const projectData = [
+    {
+      id: 1,
+      title: "FARMIUM",
+      description: "Farmium is a mobile app that connects farmers with buyers. I led the technical development as CTO, building the React Native frontend and coordinating the backend integration.",
+      technologies: ["React Native", "Expo", "Firebase", "Node.js"],
+      image: "/assets/images/projects/farmium.png",
+      link: "https://farmium.az"
+    },
+    {
+      id: 2,
+      title: "MEDICO.AZ",
+      description: "An e-commerce platform for medicine delivery in Azerbaijan. I developed the frontend interface and implemented the cart/checkout system.",
+      technologies: ["PHP", "jQuery", "MySQL", "AJAX"],
+      image: "",
+      link: "https://medico.az"
+    },
+    {
+      id: 3,
+      title: "PORTFOLIO V1",
+      description: "My first portfolio website built with pure HTML/CSS/JS. Featured interactive elements and a clean design.",
+      technologies: ["HTML5", "CSS3", "JavaScript"],
+      image: "",
+      link: "#"
+    }
+  ];
+
+  const project = projectData.find(p => p.id === projectId);
+
+  if (!isOpen || !project) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="pixel-modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="pixel-text">{project.title}</h3>
+          <button 
+            className="pixel-button close-btn"
+            onClick={onClose}
             onMouseEnter={() => playSound('hover')}
-            onClick={() => playSound('click')}
           >
-            <div className="pixel-card-header">PROJECT {project}</div>
-            <div className="pixel-card-body">
-              <p>Description of project {project}</p>
-              <button 
-                className="pixel-button small"
+            X
+          </button>
+        </div>
+        <div className="modal-content">
+          <div className="modal-image-placeholder">
+            {project.image ? (
+              <img src={project.image} alt={project.title} />
+            ) : (
+              <div className="image-placeholder pixel-text">PROJECT SCREENSHOT</div>
+            )}
+          </div>
+          <div className="modal-details">
+            <p className="pixel-text">{project.description}</p>
+            <div className="tech-stack">
+              <h4 className="pixel-text">TECH STACK:</h4>
+              <div className="tech-tags">
+                {project.technologies.map(tech => (
+                  <span key={tech} className="pixel-tag">{tech}</span>
+                ))}
+              </div>
+            </div>
+            {project.link && (
+              <a 
+                href={project.link} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="pixel-button"
                 onMouseEnter={() => playSound('hover')}
               >
-                VIEW
-              </button>
-            </div>
+                VISIT PROJECT
+              </a>
+            )}
           </div>
-        ))}
+        </div>
       </div>
     </div>
-    <div className="scanlines"></div>
-  </section>
-);
+  );
+};
 
 const Experience = () => (
   <section id="experience" className="section">
@@ -313,6 +424,8 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
   );
 };
 
+
+
 function App() {
   const [activeSection, setActiveSection] = useState('home');
   const observer = useRef();
@@ -336,6 +449,21 @@ function App() {
     return () => observer.current.disconnect();
   }, []);
 
+  // Add this near the top of your App component
+const [selectedProject, setSelectedProject] = useState(null);
+const [isModalOpen, setIsModalOpen] = useState(false);
+
+const openProjectModal = (projectId) => {
+  setSelectedProject(projectId);
+  setIsModalOpen(true);
+  playSound('click');
+};
+
+const closeProjectModal = () => {
+  setIsModalOpen(false);
+  playSound('hover');
+};
+
   return (
     <div className="container">
       <Cursor />
@@ -343,7 +471,12 @@ function App() {
       <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
       <Home />
       <About />
-      <Projects />
+      <Projects openProjectModal={openProjectModal} />
+      <ProjectModal 
+        isOpen={isModalOpen} 
+        onClose={closeProjectModal} 
+        projectId={selectedProject} 
+      />      
       <Experience />
       <Contact />
     </div>

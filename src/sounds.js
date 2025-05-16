@@ -11,12 +11,12 @@ export const sounds = {
 export const initSounds = () => {
   Object.keys(sounds).forEach(key => {
     sounds[key].audio = new Audio(sounds[key].src);
-    sounds[key].audio.volume = 0.3;
+    sounds[key].audio.volume = 0.2;
     
     // Set background music to loop
     if (key === 'intro') {
       sounds[key].audio.loop = true;
-      sounds[key].audio.volume = 0.3; // Lower volume for BGM
+      sounds[key].audio.volume = 0.4; // Lower volume for BGM
     }
     
     sounds[key].audio.load();
