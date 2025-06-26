@@ -379,7 +379,6 @@ body {
   animation: pulse 1s infinite alternate;
 }
 
-
 /* Project Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -393,13 +392,14 @@ body {
   justify-content: center;
   z-index: 2000;
   backdrop-filter: blur(4px);
+  padding: 1rem;
 }
 
 .pixel-modal {
   background: var(--primary);
   border: 4px solid var(--text);
-  max-width: 800px;
-  width: 90%;
+  width: 100%;
+  max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 8px 8px 0 var(--secondary);
@@ -419,6 +419,9 @@ body {
   padding: 1rem;
   background: var(--secondary);
   border-bottom: 3px solid var(--text);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .close-btn {
@@ -429,34 +432,70 @@ body {
 
 .modal-content {
   display: grid;
-  grid-template-columns: 0.5fr 0.5fr;
-  gap: 1rem;
-  padding: 1rem;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.modal-image-container {
+  width: 100%;
+  border: 3px solid var(--text);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.modal-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .modal-image-placeholder {
+  width: 100%;
+  aspect-ratio: 16/9;
   background: var(--bg);
   border: 3px solid var(--text);
-  aspect-ratio: 16/9;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.image-placeholder {
+.placeholder-text {
   color: var(--text);
   opacity: 0.5;
   text-align: center;
+  padding: 1rem;
 }
 
 .modal-details {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-.tech-stack {
-  margin-top: 1rem;
+.modal-description,
+.modal-features,
+.modal-tech {
+  margin-bottom: 1rem;
+}
+
+.modal-description p {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.modal-features ul {
+  margin-top: 0.5rem;
+  padding-left: 1.5rem;
+}
+
+.modal-features li {
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
 }
 
 .tech-tags {
@@ -471,28 +510,43 @@ body {
   border: 2px solid var(--text);
   padding: 0.3rem 0.6rem;
   font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.project-link {
+  margin-top: 1rem;
+  text-align: center;
+  display: block;
+  width: 100%;
 }
 
 /* Responsive Modal */
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .modal-content {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
   
-  .pixel-modal {
-    width: 95%;
-    max-height: 85vh;
+  .modal-image-container,
+  .modal-image-placeholder {
+    height: 300px;
   }
 }
 
-
-
-
-
-
-
-
-
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .modal-header {
+    padding: 0.8rem;
+  }
+  
+  .modal-description p,
+  .modal-features li {
+    font-size: 0.8rem;
+  }
+}
 
 
 /* Animations */

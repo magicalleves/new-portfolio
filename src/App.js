@@ -13,8 +13,6 @@ const playSound = (soundName) => {
   }
 };
 
-
-
 // Custom Cursor Component
 const Cursor = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -50,7 +48,6 @@ const Cursor = () => {
   );
 };
 
-
 const Loading = ({ onLoaded }) => {
   useEffect(() => {
     const handleFirstClick = async () => {
@@ -76,7 +73,6 @@ const Loading = ({ onLoaded }) => {
     </div>
   );
 };
-
 
 // Sections
 const Home = () => {
@@ -165,14 +161,15 @@ const About = () => (
     <div className="scanlines"></div>
   </section>
 );
+
 const Projects = ({ openProjectModal }) => {
   const projectData = [
     {
       id: 1,
       title: "FARMIUM",
-      description: "Farmium is a mobile app that connects farmers with buyers. I led the technical development as CTO, building the React Native frontend and coordinating the backend integration.",
+      description: "",
       technologies: ["React Native", "Expo", "Firebase", "Node.js"],
-      image: "/assets/images/farmium.png", // You can add image URLs here
+      image: "/assets/images/farmium.png",
       link: "https://farmium.az"
     },
     {
@@ -229,26 +226,44 @@ const ProjectModal = ({ isOpen, onClose, projectId }) => {
     {
       id: 1,
       title: "FARMIUM",
-      description: "Farmium is a mobile app that connects farmers with buyers. I led the technical development as CTO, building the React Native frontend and coordinating the backend integration.",
+      description: "Farmium is a mobile app that connects plant lovers with their plants. I led the technical development as CTO, building the React Native frontend and coordinating the backend integration. The app features a user-friendly interface for users to list their plants and take care of them.",
       technologies: ["React Native", "Expo", "Firebase", "Node.js"],
       image: "/assets/images/projects/farmium.png",
-      link: "https://farmium.az"
+      link: "https://farmium.az",
+      features: [
+        "Real-time product listings",
+        "In-app messaging between farmers and buyers",
+        "Secure payment integration",
+        "Location-based farm discovery"
+      ]
     },
     {
       id: 2,
       title: "MEDICO.AZ",
-      description: "An e-commerce platform for medicine delivery in Azerbaijan. I developed the frontend interface and implemented the cart/checkout system.",
+      description: "An e-commerce platform for medicine delivery in Azerbaijan. I developed the frontend interface and implemented the cart/checkout system. The platform allows users to search for medicines, compare prices, and get medications delivered to their doorstep.",
       technologies: ["PHP", "jQuery", "MySQL", "AJAX"],
       image: "",
-      link: "https://medico.az"
+      link: "https://medico.az",
+      features: [
+        "Medicine search with filters",
+        "Shopping cart functionality",
+        "Order tracking system",
+        "Responsive design for all devices"
+      ]
     },
     {
       id: 3,
       title: "PORTFOLIO V1",
-      description: "My first portfolio website built with pure HTML/CSS/JS. Featured interactive elements and a clean design.",
+      description: "My first portfolio website built with pure HTML/CSS/JS. Featured interactive elements and a clean design to showcase my early projects and skills as a developer.",
       technologies: ["HTML5", "CSS3", "JavaScript"],
       image: "",
-      link: "#"
+      link: "#",
+      features: [
+        "Interactive animations",
+        "Responsive layout",
+        "Project showcase section",
+        "Contact form with validation"
+      ]
     }
   ];
 
@@ -270,29 +285,47 @@ const ProjectModal = ({ isOpen, onClose, projectId }) => {
           </button>
         </div>
         <div className="modal-content">
-          <div className="modal-image-placeholder">
-            {project.image ? (
-              <img src={project.image} alt={project.title} />
-            ) : (
-              <div className="image-placeholder pixel-text">PROJECT SCREENSHOT</div>
-            )}
-          </div>
+          {project.image ? (
+            <div className="modal-image-container">
+              <img src={project.image} alt={project.title} className="modal-image" />
+            </div>
+          ) : (
+            <div className="modal-image-placeholder pixel-text">
+              <div className="placeholder-text">PROJECT SCREENSHOT</div>
+            </div>
+          )}
           <div className="modal-details">
-            <p className="pixel-text">{project.description}</p>
-            <div className="tech-stack">
-              <h4 className="pixel-text">TECH STACK:</h4>
+            <div className="modal-description">
+              <h4 className="pixel-text">DESCRIPTION</h4>
+              <p>{project.description}</p>
+            </div>
+            
+            {project.features && project.features.length > 0 && (
+              <div className="modal-features">
+                <h4 className="pixel-text">FEATURES</h4>
+                <ul className="pixel-list">
+                  {project.features.map((feature, index) => (
+                    <li key={index}>{feature}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            <div className="modal-tech">
+              <h4 className="pixel-text">TECH STACK</h4>
               <div className="tech-tags">
                 {project.technologies.map(tech => (
                   <span key={tech} className="pixel-tag">{tech}</span>
                 ))}
               </div>
             </div>
+            
             {project.link && (
               <a 
                 href={project.link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="pixel-button"
+                className="pixel-button project-link"
                 onMouseEnter={() => playSound('hover')}
               >
                 VISIT PROJECT
@@ -310,13 +343,12 @@ const Experience = () => (
     <div className="pixel-box glitch-box">
       <h2 className="pixel-text">EXPERIENCE</h2>
       <div className="timeline">
-      <div className="timeline-item">
+        <div className="timeline-item">
           <div className="timeline-year">2024</div>
           <div className="timeline-content">
             <h3><span className="glow-text">Co-founder & CTO</span> @ Farmium</h3>
             <br></br>
             <p>At Farmium, I oversee the company's technical initiatives and guide the direction of product development. Collaborating with a dedicated team, we continuously innovate and adapt to meet our users' needs.</p>
-
           </div>
         </div>
         <div className="timeline-item">
@@ -324,7 +356,6 @@ const Experience = () => (
           <div className="timeline-content">
             <h3><span className="glow-text">React Native Developer</span> @ AISTGroup</h3>
             <br></br>
-
             <p>At AISTGroup, I was actively involved in developing and enhancing a frontend React Native application using the Expo framework. My role involved closely collaborating with the design team to ensure a seamless user experience across Android and iOS platforms, and troubleshooting any technical challenges that arose</p>
           </div>
         </div>
@@ -333,7 +364,6 @@ const Experience = () => (
           <div className="timeline-content">
             <h3><span className="glow-text">Website Developer</span> @ Medico.Az</h3>
             <br></br>
-
             <p>At Medico.az, I contributed to the design and development of an interactive web application, streamlining the process for users to order medicines for home delivery. Leveraging a mix of technologies like PHP, AJAX, jQuery, and MySQLi, I collaborated with the backend team to ensure the platform's efficiency and responsiveness.</p>
           </div>
         </div>
@@ -424,10 +454,10 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
   );
 };
 
-
-
 function App() {
   const [activeSection, setActiveSection] = useState('home');
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const observer = useRef();
 
   useEffect(() => {
@@ -449,20 +479,16 @@ function App() {
     return () => observer.current.disconnect();
   }, []);
 
-  // Add this near the top of your App component
-const [selectedProject, setSelectedProject] = useState(null);
-const [isModalOpen, setIsModalOpen] = useState(false);
+  const openProjectModal = (projectId) => {
+    setSelectedProject(projectId);
+    setIsModalOpen(true);
+    playSound('click');
+  };
 
-const openProjectModal = (projectId) => {
-  setSelectedProject(projectId);
-  setIsModalOpen(true);
-  playSound('click');
-};
-
-const closeProjectModal = () => {
-  setIsModalOpen(false);
-  playSound('hover');
-};
+  const closeProjectModal = () => {
+    setIsModalOpen(false);
+    playSound('hover');
+  };
 
   return (
     <div className="container">
