@@ -1,71 +1,55 @@
-# Getting Started with Create React App
+# Eva Gadzhieva - Portfolio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A retro-futuristic, cyberpunk-inspired portfolio website built with React, featuring a pixel-art aesthetic with glitch effects, scanlines, and interactive elements.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Custom Pixel Cursor**: Interactive custom cursor that changes on click (desktop only)
+- **Typewriter Effect**: Animated typing introduction with sound effects
+- **Responsive Design**: Optimized for both desktop and mobile devices
+- **Interactive Elements**: Hover and click sound effects throughout
+- **Modal System**: Detailed project modals with technology showcases
+- **Retro Terminal**: Cyberpunk-style terminal interface in the About section
+- **Scanline Effect**: Authentic CRT monitor visual effect
+- **Audio Integration**: Background music and sound effects
 
-### `npm start`
+## Technologies Used
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React (with Hooks: useState, useEffect, useRef)
+- CSS3 (Custom Properties, Grid, Flexbox, Animations)
+- HTML5
+- JavaScript (ES6+)
+- Web Audio API
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation & Setup
 
-### `npm test`
+1. Clone the repository:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+git clone <repository-url>
+cd portfolio
+```
 
-### `npm run build`
+2. Install dependencies:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm install
+Add sound files to the public/assets/sounds/ directory:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+click.wav
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+hover.wav
 
-### `npm run eject`
+letter.wav
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+success.wav
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+intro.mp3 (background music)
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+3. Start the development server:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# new-portfolio
+```bash
+npm start
+Open http://localhost:3000 to view it in the browser.
+```
