@@ -17,8 +17,19 @@ const playSound = (soundName) => {
 const Cursor = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [clicked, setClicked] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Only show cursor on desktop devices with mouse
+    const checkDevice = () => {
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isDesktop = window.innerWidth > 768;
+      setIsVisible(!isTouchDevice && isDesktop);
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+
     const moveCursor = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
@@ -26,16 +37,21 @@ const Cursor = () => {
     const handleMouseDown = () => setClicked(true);
     const handleMouseUp = () => setClicked(false);
 
-    window.addEventListener('mousemove', moveCursor);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
+    if (isVisible) {
+      window.addEventListener('mousemove', moveCursor);
+      window.addEventListener('mousedown', handleMouseDown);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
 
     return () => {
+      window.removeEventListener('resize', checkDevice);
       window.removeEventListener('mousemove', moveCursor);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, []);
+  }, [isVisible]);
+
+  if (!isVisible) return null;
 
   return (
     <div 
@@ -50,7 +66,7 @@ const Cursor = () => {
 
 const Loading = ({ onLoaded }) => {
   useEffect(() => {
-    const handleFirstClick = async () => {
+    const handleFirstInteraction = async () => {
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       await audioContext.resume();
       
@@ -64,46 +80,73 @@ const Loading = ({ onLoaded }) => {
       onLoaded();
     };
 
-    document.addEventListener('click', handleFirstClick, { once: true });
+    const handleClick = () => handleFirstInteraction();
+    const handleTouch = () => handleFirstInteraction();
+
+    document.addEventListener('click', handleClick, { once: true });
+    document.addEventListener('touchstart', handleTouch, { once: true });
+
+    return () => {
+      document.removeEventListener('click', handleClick);
+      document.removeEventListener('touchstart', handleTouch);
+    };
   }, [onLoaded]);
 
   return (
     <div className="loading-screen">
-      <div className="loading-text pixel-text">CLICK ANYWHERE TO START</div>
+      <div className="loading-text pixel-text">
+        <span className="desktop-text">CLICK ANYWHERE TO START</span>
+        <span className="mobile-text">TAP TO START</span>
+      </div>
     </div>
   );
 };
 
 // Sections
 const Home = () => {
-  const text = "Hi! I'm Eva Gadzhieva. Meow";
-  const [displayText, setDisplayText] = useState([]);
+  const line1 = "Hi! I'm Eva";
+  const line2 = "Gadzhieva. Meow";
+  const [displayText1, setDisplayText1] = useState([]);
+  const [displayText2, setDisplayText2] = useState([]);
   const [startTyping, setStartTyping] = useState(false);
-  const typingDelay = 100; // Milliseconds between characters
-  const soundOffset = 25;  // Audio anticipation offset
+  const typingDelay = 100;
+  const soundOffset = 25;
 
   useEffect(() => {
     if (!startTyping) return;
 
+    // Type first line
     let currentIndex = 0;
     const timers = [];
 
-    const typeCharacter = (index) => {
-      if (index <= text.length) {
-        // Play sound before character appears
-        if (text[index - 1] && text[index - 1] !== ' ' && text[index - 1] !== '\n') {
+    const typeFirstLine = (index) => {
+      if (index <= line1.length) {
+        if (line1[index - 1] && line1[index - 1] !== ' ') {
           setTimeout(() => playSound('letter'), index * typingDelay - soundOffset);
         }
-
-        setDisplayText(text.slice(0, index).split(''));
-        
+        setDisplayText1(line1.slice(0, index).split(''));
         currentIndex++;
-        const timer = setTimeout(() => typeCharacter(currentIndex), typingDelay);
+        const timer = setTimeout(() => typeFirstLine(currentIndex), typingDelay);
+        timers.push(timer);
+      } else {
+        // Start typing second line after a brief pause
+        setTimeout(() => typeSecondLine(0), 500);
+      }
+    };
+
+    const typeSecondLine = (index) => {
+      if (index <= line2.length) {
+        if (line2[index - 1] && line2[index - 1] !== ' ') {
+          setTimeout(() => playSound('letter'), (line1.length + index) * typingDelay - soundOffset);
+        }
+        setDisplayText2(line2.slice(0, index).split(''));
+        currentIndex = index + 1;
+        const timer = setTimeout(() => typeSecondLine(currentIndex), typingDelay);
         timers.push(timer);
       }
     };
 
-    typeCharacter(currentIndex);
+    typeFirstLine(currentIndex);
 
     return () => timers.forEach(timer => clearTimeout(timer));
   }, [startTyping]);
@@ -111,30 +154,98 @@ const Home = () => {
   return (
     <section id="home" className="section">
       {!startTyping && <Loading onLoaded={() => setStartTyping(true)} />}
-      <h1 className="pixel-text">
-        {displayText.map((char, index) => (
-          <span 
-            key={index}
-            className="pixel-char"
-            style={{ 
-              animationDelay: `${index * 0.1}s`,
-              marginRight: char === ' ' ? '0.5em' : '0',
-              whiteSpace: char === '\n' ? 'pre' : 'normal'
-            }}
-          >
-            {char === ' ' ? '\u00A0' : char === '\n' ? <br/> : char}
-          </span>
-        ))}
-      </h1>
+      <div className="home-content">
+        <h1 className="pixel-text home-title">
+          <div className="line-container">
+            {displayText1.map((char, index) => (
+              <span 
+                key={`line1-${index}`}
+                className="pixel-char"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                {char === ' ' ? '\u00A0' : char}
+              </span>
+            ))}
+          </div>
+          <div className="line-container">
+            {displayText2.map((char, index) => (
+              <span 
+                key={`line2-${index}`}
+                className="pixel-char"
+                style={{ animationDelay: `${(line1.length + index) * 0.1 + 0.5}s` }}
+              >
+                {char === ' ' ? '\u00A0' : char}
+              </span>
+            ))}
+          </div>
+        </h1>
+      </div>
       <div className="scanlines"></div>
     </section>
   );
 };
+// const Home = () => {
+//   const text = "Hi! I'm Eva Gadzhieva. Meow";
+//   const [displayText, setDisplayText] = useState([]);
+//   const [startTyping, setStartTyping] = useState(false);
+//   const typingDelay = 100;
+//   const soundOffset = 25;
+
+//   useEffect(() => {
+//     if (!startTyping) return;
+
+//     let currentIndex = 0;
+//     const timers = [];
+
+//     const typeCharacter = (index) => {
+//       if (index <= text.length) {
+//         // Play sound before character appears
+//         if (text[index - 1] && text[index - 1] !== ' ' && text[index - 1] !== '\n') {
+//           setTimeout(() => playSound('letter'), index * typingDelay - soundOffset);
+//         }
+
+//         setDisplayText(text.slice(0, index).split(''));
+        
+//         currentIndex++;
+//         const timer = setTimeout(() => typeCharacter(currentIndex), typingDelay);
+//         timers.push(timer);
+//       }
+//     };
+
+//     typeCharacter(currentIndex);
+
+//     return () => timers.forEach(timer => clearTimeout(timer));
+//   }, [startTyping]);
+
+//   return (
+//     <section id="home" className="section">
+//       {!startTyping && <Loading onLoaded={() => setStartTyping(true)} />}
+//       <div className="home-content">
+//         <h1 className="pixel-text home-title">
+//           {displayText.map((char, index) => (
+//             <span 
+//               key={index}
+//               className="pixel-char"
+//               style={{ 
+//                 animationDelay: `${index * 0.1}s`,
+//                 marginRight: char === ' ' ? '0.5em' : '0',
+//                 whiteSpace: char === '\n' ? 'pre' : 'normal'
+//               }}
+//             >
+//               {char === ' ' ? '\u00A0' : char === '\n' ? <br/> : char}
+//             </span>
+//           ))}
+//         </h1>
+//       </div>
+//       <div className="scanlines"></div>
+//     </section>
+//   );
+// };
 
 const About = () => (
   <section id="about" className="section">
     <div className="pixel-box glitch-box">
-      <h2 className="pixel-text">ABOUT ME</h2>
+      <h2 className="pixel-text section-title">ABOUT ME</h2>
       <div className="terminal">
         <div className="terminal-header">
           <span className="terminal-btn red"></span>
@@ -143,16 +254,16 @@ const About = () => (
           <span className="terminal-title">user@eva:~</span>
         </div>
         <div className="terminal-body">
-          <p> Welcome to my digital realm!</p>
+          <p>Welcome to my digital realm!</p>
           <p>I'm a university student and a passionate developer with skills in:</p>
           <ul className="pixel-list">
-            <li> JavaScript/TypeScript</li>
-            <li> React/Node.js</li>
-            <li> React Native/Expo</li>
-            <li> Web Development</li>
+            <li>JavaScript/TypeScript</li>
+            <li>React/Node.js</li>
+            <li>React Native/Expo</li>
+            <li>Web Development</li>
           </ul>
-          <p> Currently learning:  Game Development</p>
-          <br></br>
+          <p>Currently learning: Game Development</p>
+          <br/>
           <p>I am committed to continuous learning and staying up-to-date with the latest advancements in software development. I actively seek opportunities to expand my knowledge and gain practical experience in order to enhance my skills and contribute to the field.</p>
           <p className="blink">_</p>
         </div>
@@ -167,7 +278,7 @@ const Projects = ({ openProjectModal }) => {
     {
       id: 1,
       title: "FARMIUM",
-      description: "",
+      description: "A mobile app that connects plant lovers with their plants. I led the technical development as CTO, building the React Native frontend and coordinating the backend integration.",
       technologies: ["React Native", "Expo", "Firebase", "Node.js"],
       image: "/assets/images/farmium.png",
       link: "https://farmium.az"
@@ -193,7 +304,7 @@ const Projects = ({ openProjectModal }) => {
   return (
     <section id="projects" className="section">
       <div className="pixel-box glitch-box">
-        <h2 className="pixel-text">MY PROJECTS</h2>
+        <h2 className="pixel-text section-title">MY PROJECTS</h2>
         <div className="project-grid">
           {projectData.map(project => (
             <div 
@@ -204,7 +315,7 @@ const Projects = ({ openProjectModal }) => {
             >
               <div className="pixel-card-header">{project.title}</div>
               <div className="pixel-card-body">
-                <p>{project.description.substring(0, 60)}...</p>
+                <p>{project.description.substring(0, 90)}...</p>
                 <button 
                   className="pixel-button small"
                   onMouseEnter={() => playSound('hover')}
@@ -269,6 +380,18 @@ const ProjectModal = ({ isOpen, onClose, projectId }) => {
 
   const project = projectData.find(p => p.id === projectId);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!isOpen || !project) return null;
 
   return (
@@ -281,19 +404,22 @@ const ProjectModal = ({ isOpen, onClose, projectId }) => {
             onClick={onClose}
             onMouseEnter={() => playSound('hover')}
           >
-            X
+            ✕
           </button>
         </div>
         <div className="modal-content">
-          {project.image ? (
-            <div className="modal-image-container">
-              <img src={project.image} alt={project.title} className="modal-image" />
-            </div>
-          ) : (
-            <div className="modal-image-placeholder pixel-text">
-              <div className="placeholder-text">PROJECT SCREENSHOT</div>
-            </div>
-          )}
+          <div className="modal-image-section">
+            {project.image ? (
+              <div className="modal-image-container">
+                <img src={project.image} alt={project.title} className="modal-image" />
+              </div>
+            ) : (
+              <div className="modal-image-placeholder pixel-text">
+                <div className="placeholder-text">PROJECT SCREENSHOT</div>
+              </div>
+            )}
+          </div>
+          
           <div className="modal-details">
             <div className="modal-description">
               <h4 className="pixel-text">DESCRIPTION</h4>
@@ -320,7 +446,7 @@ const ProjectModal = ({ isOpen, onClose, projectId }) => {
               </div>
             </div>
             
-            {project.link && (
+            {project.link && project.link !== "#" && (
               <a 
                 href={project.link} 
                 target="_blank" 
@@ -338,34 +464,66 @@ const ProjectModal = ({ isOpen, onClose, projectId }) => {
   );
 };
 
+// const Experience = () => (
+//   <section id="experience" className="section">
+//     <div className="pixel-box glitch-box experience-container">
+//       <h2 className="pixel-text section-title">EXPERIENCE</h2>
+//       <div className="timeline">
+//         <div className="timeline-item">
+//           <div className="timeline-year">2024</div>
+//           <div className="timeline-content">
+//             <h3><span className="glow-text">Co-founder & CTO</span> @ Farmium</h3>
+//             <p>At Farmium, I oversee the company's technical initiatives and guide the direction of product development. Collaborating with a dedicated team, we continuously innovate and adapt to meet our users' needs.</p>
+//           </div>
+//         </div>
+//         <div className="timeline-item">
+//           <div className="timeline-year">2023</div>
+//           <div className="timeline-content">
+//             <h3><span className="glow-text">React Native Developer</span> @ AISTGroup</h3>
+//             <p>At AISTGroup, I was actively involved in developing and enhancing a frontend React Native application using the Expo framework. My role involved closely collaborating with the design team to ensure a seamless user experience across Android and iOS platforms.</p>
+//           </div>
+//         </div>
+//         <div className="timeline-item">
+//           <div className="timeline-year">2022</div>
+//           <div className="timeline-content">
+//             <h3><span className="glow-text">Website Developer</span> @ Medico.Az</h3>
+//             <p>At Medico.az, I contributed to the design and development of an interactive web application, streamlining the process for users to order medicines for home delivery. Leveraging technologies like PHP, AJAX, jQuery, and MySQLi.</p>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//     <div className="scanlines"></div>
+//   </section>
+// );
+
 const Experience = () => (
   <section id="experience" className="section">
-    <div className="pixel-box glitch-box">
-      <h2 className="pixel-text">EXPERIENCE</h2>
-      <div className="timeline">
-        <div className="timeline-item">
-          <div className="timeline-year">2024</div>
-          <div className="timeline-content">
-            <h3><span className="glow-text">Co-founder & CTO</span> @ Farmium</h3>
-            <br></br>
-            <p>At Farmium, I oversee the company's technical initiatives and guide the direction of product development. Collaborating with a dedicated team, we continuously innovate and adapt to meet our users' needs.</p>
+    <div className="pixel-box glitch-box experience-outer-container">
+      <h2 className="pixel-text section-title">EXPERIENCE</h2>
+      <div className="experience-inner-container">
+        <div className="timeline">
+          <div className="timeline-item">
+            <div className="timeline-year">2024</div>
+            <div className="timeline-content">
+              <h3><span className="glow-text">Co-founder & CTO</span> @ Farmium</h3>
+              <p>At Farmium, I oversee the company's technical initiatives and guide the direction of product development. Collaborating with a dedicated team, we continuously innovate and adapt to meet our users' needs.</p>
+            </div>
           </div>
-        </div>
-        <div className="timeline-item">
-          <div className="timeline-year">2023</div>
-          <div className="timeline-content">
-            <h3><span className="glow-text">React Native Developer</span> @ AISTGroup</h3>
-            <br></br>
-            <p>At AISTGroup, I was actively involved in developing and enhancing a frontend React Native application using the Expo framework. My role involved closely collaborating with the design team to ensure a seamless user experience across Android and iOS platforms, and troubleshooting any technical challenges that arose</p>
+          <div className="timeline-item">
+            <div className="timeline-year">2023</div>
+            <div className="timeline-content">
+              <h3><span className="glow-text">React Native Developer</span> @ AISTGroup</h3>
+              <p>At AISTGroup, I was actively involved in developing and enhancing a frontend React Native application using the Expo framework. My role involved closely collaborating with the design team to ensure a seamless user experience across Android and iOS platforms.</p>
+            </div>
           </div>
-        </div>
-        <div className="timeline-item">
-          <div className="timeline-year">2022</div>
-          <div className="timeline-content">
-            <h3><span className="glow-text">Website Developer</span> @ Medico.Az</h3>
-            <br></br>
-            <p>At Medico.az, I contributed to the design and development of an interactive web application, streamlining the process for users to order medicines for home delivery. Leveraging a mix of technologies like PHP, AJAX, jQuery, and MySQLi, I collaborated with the backend team to ensure the platform's efficiency and responsiveness.</p>
+          <div className="timeline-item">
+            <div className="timeline-year">2022</div>
+            <div className="timeline-content">
+              <h3><span className="glow-text">Website Developer</span> @ Medico.Az</h3>
+              <p>At Medico.az, I contributed to the design and development of an interactive web application, streamlining the process for users to order medicines for home delivery. Leveraging technologies like PHP, AJAX, jQuery, and MySQLi.</p>
+            </div>
           </div>
+       
         </div>
       </div>
     </div>
@@ -386,10 +544,10 @@ const Contact = () => {
   return (
     <section id="contact" className="section">
       <div className="pixel-box glitch-box">
-        <h2 className="pixel-text">GET IN TOUCH</h2>
+        <h2 className="pixel-text section-title">GET IN TOUCH</h2>
         {sent ? (
           <div className="success-message">
-            <p>MESSAGE SENT!</p>
+            <p className="pixel-text">MESSAGE SENT!</p>
             <div className="pixel-checkmark">✓</div>
           </div>
         ) : (
