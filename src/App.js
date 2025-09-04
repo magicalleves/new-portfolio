@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { sounds, initSounds } from './sounds';
+import emailjs from 'emailjs-com';
+
+emailjs.init("fNJyQ_YyVCceFyCpQ");
 
 // Initialize sounds when the app loads
 initSounds();
@@ -531,14 +534,100 @@ const Experience = () => (
   </section>
 );
 
+// const Contact = () => {
+//   const [sent, setSent] = useState(false);
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     playSound('success');
+//     setSent(true);
+//     setTimeout(() => setSent(false), 3000);
+//   };
+
+//   return (
+//     <section id="contact" className="section">
+//       <div className="pixel-box glitch-box">
+//         <h2 className="pixel-text section-title">GET IN TOUCH</h2>
+//         {sent ? (
+//           <div className="success-message">
+//             <p className="pixel-text">MESSAGE SENT!</p>
+//             <div className="pixel-checkmark">✓</div>
+//           </div>
+//         ) : (
+//           <form className="pixel-form" onSubmit={handleSubmit}>
+//             <input 
+//               type="text" 
+//               className="pixel-input" 
+//               placeholder="NAME"
+//               onFocus={() => playSound('hover')}
+//               required
+//             />
+//             <input 
+//               type="email" 
+//               className="pixel-input" 
+//               placeholder="EMAIL"
+//               onFocus={() => playSound('hover')}
+//               required
+//             />
+//             <textarea 
+//               className="pixel-textarea" 
+//               placeholder="MESSAGE"
+//               onFocus={() => playSound('hover')}
+//               required
+//             ></textarea>
+//             <button 
+//               type="submit" 
+//               className="pixel-button"
+//               onMouseEnter={() => playSound('hover')}
+//             >
+//               SEND MESSAGE
+//             </button>
+//           </form>
+//         )}
+//       </div>
+//       <div className="scanlines"></div>
+//     </section>
+//   );
+// };
+
+
+
 const Contact = () => {
   const [sent, setSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    playSound('success');
-    setSent(true);
-    setTimeout(() => setSent(false), 3000);
+    setIsLoading(true);
+    
+    // Get form data
+    const formData = new FormData(e.target);
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: formData.get('message')
+    };
+
+    // Send email using EmailJS
+    emailjs.send(
+      'service_tf4d14n', // Replace with your EmailJS service ID
+      'template_dpfol4g', // Replace with your EmailJS template ID
+      data,
+      'fNJyQ_YyVCceFyCpQ' // Replace with your EmailJS public key
+    )
+    .then((result) => {
+      console.log('Email sent successfully:', result.text);
+      playSound('success');
+      setSent(true);
+      setIsLoading(false);
+      e.target.reset(); // Reset the form
+      setTimeout(() => setSent(false), 3000);
+    })
+    .catch((error) => {
+      console.error('Email sending failed:', error);
+      setIsLoading(false);
+      // You might want to show an error message to the user
+    });
   };
 
   return (
@@ -554,30 +643,37 @@ const Contact = () => {
           <form className="pixel-form" onSubmit={handleSubmit}>
             <input 
               type="text" 
+              name="name"
               className="pixel-input" 
               placeholder="NAME"
               onFocus={() => playSound('hover')}
               required
+              disabled={isLoading}
             />
             <input 
               type="email" 
+              name="email"
               className="pixel-input" 
               placeholder="EMAIL"
               onFocus={() => playSound('hover')}
               required
+              disabled={isLoading}
             />
             <textarea 
+              name="message"
               className="pixel-textarea" 
               placeholder="MESSAGE"
               onFocus={() => playSound('hover')}
               required
+              disabled={isLoading}
             ></textarea>
             <button 
               type="submit" 
               className="pixel-button"
               onMouseEnter={() => playSound('hover')}
+              disabled={isLoading}
             >
-              SEND MESSAGE
+              {isLoading ? 'SENDING...' : 'SEND MESSAGE'}
             </button>
           </form>
         )}
